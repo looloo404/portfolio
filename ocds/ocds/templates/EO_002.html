@@ -1,0 +1,75 @@
+
+
+<!doctype html>                          
+<html lang="ko" > 
+    <head> <meta charset="utf-8">
+    <title>온라인 수업 수강 화면</title> 
+    <link href="static/css/bootstrap.css" rel="stylesheet">
+    <link href="static/css/ocds.css" rel="stylesheet">
+
+
+    <script>
+        function test() {
+
+        }
+    </script>
+    </head>    
+    <body>
+        <div >
+            <header class="page-header">
+                <h1>온라인 수업 수강 화면</h1>
+            </header>
+            <div >
+                <div >
+                    <form method="POST">
+                        {% csrf_token %}
+
+                    </form>  
+                    <!-- <video muted autoplay loop >
+                        <!--source src="./20210601_105559_04.mp4" type="video/mp4"-->
+                        <!-- <source src="https://www.youtube.com/watch?v=rvf2yzcfhXE" >
+                        <strong>Your browser does not support the video tag.</strong>
+                    </video>
+                    <iframe src =https://www.youtube.com/watch?v=rvf2yzcfhXE" frameborder="1" allowfullscreen encoding="utf-8"></iframe> --> -->
+                    {% block body %}
+                    <h1>웹캠 보기</h1>
+                    <table>
+                        <tr>
+                            <td >
+                                <img src="http://127.0.0.1:8000/detectme" style="width:50%"/>
+                            </td>
+                            <td>
+                
+                            </td>
+                        </tr>
+                    </table>
+                {% endblock %}
+                    <div >
+                        <header class="page-header">
+                            <h1>Video Detail</h1>
+                        </header>
+                        <div class="row">
+                            <div class="col-md-16">
+                                <div id="player" ></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </body>
+    <script>
+        var tag = document.createElement('script');
+    
+        tag.src = "https://www.youtube.com/iframe_api";
+        var firstScriptTag = document.getElementsByTagName('script')[0];
+        firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+    
+        var player;
+        function onYouTubeIframeAPIReady() {
+            player = new YT.Player('player', {
+                videoId: 'rvf2yzcfhXE'
+            });
+        }
+    </script>
+</html>
