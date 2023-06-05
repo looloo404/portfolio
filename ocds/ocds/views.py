@@ -1,7 +1,7 @@
 import json
 from django.shortcuts import render
 from django.http import JsonResponse
-from .models import UserInfo, LectureInfo, ResultInfo, TutorInfo
+from .models import UserInfo, LectureInfo, ResultInfo, TutorInfo, EventInfo
 
 from django.shortcuts import render
 from django.views.decorators import gzip
@@ -13,16 +13,41 @@ from tensorflow.keras.models import load_model
 import dlib
 from scipy.spatial import distance
 import numpy as np
-
+from datetime import datetime
 
 # Create your views here.
 def lecture_list(request):
     return render(request, 'EO_001.html', {})
 
 
-def lecture_play(request):
+def get_lecture_name(request):
     
-    return render(request, 'EO_002.html', {})
+    # form 을 사용하는 방식으로 수정 
+    # request로부터 userid 를 받아서 조건에 넣어야 함. 
+    lectures = LectureInfo.objects.all() # 
+    tutors = TutorInfo.objects.all() # 
+    return render(request, 'EO_001.html', {'lectures' : lectures, 'tutors': tutors})
+
+
+def lecture_play(request):
+    # print(request)
+
+    userinfo = UserInfo.objects.get(user_id=request.GET.get('user'))
+    lecture = LectureInfo.objects.get(lecture_id = request.GET.get('lecture'))
+    
+    result = ResultInfo.objects.create(
+        user_id = userinfo, # request.UserInfo.user_id, 
+        lecture_id = lecture, # request.UserInfo.lecture_id,
+        capture_start = datetime.now().time(),
+        capture_end = datetime.now().time(),
+        start_log = datetime.now().time(),
+        end_log = datetime.now().time(),
+        registration_date = datetime.now()
+    )
+    print("*****************")
+    print(result)
+    print("*****************")
+    return render(request, 'EO_002.html', {'result':result})   
 
 def lecture_sort(request):
     # 사용자 ID를 가져옴 (request를 통해 전달된 데이터)
@@ -45,9 +70,13 @@ def check_user_info(request):
         # UserInfo 모델에서 사용자 정보와 일치하는지 확인
         try:
 
-            user = UserInfo.objects.get(user_id=user_id)
-            # user가 null 이 아닌지 체크하는 부분 필요. 추후 검토 
-            valid = True
+            user = UserInfo.objects.get(user_id = user_id, password = password)
+
+            if (user.user_name != None):
+                valid = True
+            else:
+                valid = False 
+
         except UserInfo.DoesNotExist:
             valid = False
           
@@ -61,7 +90,7 @@ def check_user_info(request):
 
 
 
-# 모델 적용 부부 시작 
+# 모델 적용 부분 시작 
 
 # 
 def loss_fn(y_true, y_pred):
@@ -88,10 +117,10 @@ hog_face_detector = dlib.get_frontal_face_detector()
 dlib_facelandmark = dlib.shape_predictor("ocds\models\shape_predictor_68_face_landmarks.dat")
 
 
-def home(request):
-    context = {}
+# def home(request):
+#     context = {}
 
-    return render(request, "home.html", context)
+#     return render(request, "home.html", context)
 
 
 class VideoCamera(object):
@@ -108,7 +137,7 @@ class VideoCamera(object):
     def __del__(self):
         self.video.release()
 
-    def get_frame(self):
+    def get_frame(self, resultId):
         
 
         image = self.frame
@@ -152,10 +181,12 @@ class VideoCamera(object):
             EAR = round(EAR,2)
 
             if EAR<0.29:
-                state = 'close'
+                # state = 'close'
+                state = 1
                 # print(EAR)
             else:
-                state = 'open'
+                #state = 'open'
+                state = 0
                 
     # 강지윤 파트
     
@@ -219,14 +250,20 @@ class VideoCamera(object):
             # 이쪽 부분에 데이터베이스에 저장하는 코드를 작성하시면 될겁니다. 만약 awake sleep 둘다를 저장하려면
             #self.sleep과 self.awake 값을 저장하시면 됩니다.
             # awake와 sleep을 둘다 저장하려면 밑에 if else 문은 지우셔도 됩니다. 0으로 초기화하는 부분은 지우시면 안됩니다.
-            if self.sleep > self.awake:
-                cv2.putText(image, 'You\'re sleeping', (30, 30),
-                    cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 255), 2)
+            # if self.sleep > self.awake:
+            #    cv2.putText(image, 'You\'re sleeping', (30, 30),
+            #        cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 255), 2)
                 #최종 결과 확인 입니다.
             
-            else:
-                pass
+            #else:
+            #    pass
                 #awake라고 데이터베이스에 넣는다
+
+            
+                
+            # 저장 
+            # TB - Event table, Result table 
+            saveEvent(resultId, 123456789, self.sleep, self.awake, state)
             
             self.sleep = 0
             self.awake = 0
@@ -252,33 +289,51 @@ class VideoCamera(object):
             (self.grabbed, self.frame) = self.video.read()
 
 
-def gen(camera):
+def gen(camera, resultId):
+    print("gen------------resultId-----")
+    print(resultId)
+    resultId = str(resultId)
     while True:
-        frame = camera.get_frame()
+        frame = camera.get_frame(resultId)
         yield(b'--frame\r\n'
               b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n\r\n')
 
 
 @gzip.gzip_page
 def detectme(request):
+    # print(request.GET.get('resultId'))
+    # print("################")
+    resultId = request.GET.get('resultId')
+    lectureId = request.GET.get('lectuerId')
     try:
         cam = VideoCamera()
-        return StreamingHttpResponse(gen(cam), content_type="multipart/x-mixed-replace;boundary=frame")
+        return StreamingHttpResponse(gen(cam, resultId), content_type="multipart/x-mixed-replace;boundary=frame")
     except:  # This is bad! replace it with proper handling
         print("에러입니다...")
         pass
 
 # Event 테이블에 저장 
-# def saveEvent():
-#     # event = get_object_or_404(Photo,pk=pk)
+def saveEvent(resultId, lectureId, sleep, awake, state): #ResultInfo, LectureInfo):
+    #ResultInfo, LectureInfo):
+    # print("---------------------")
+    # print(resultId)
+    # print("---------------------")
+    # print(lectureId)
+    result = ResultInfo.objects.get(result_id = resultId)
+    # print(result)
+    lecture = LectureInfo.objects.get(lecture_id = lectureId)
+    # print(lecture)
+    # print("---------------------")
     
-#     event = EventInfo.objects.get()
-#     event.eventId = 
-#     event.resultId = 
-#     event.lectureId = 
-#     event.StartTime = 
-#     event.rndTime = 
-#     event.continuedTime = 
-#     event = EventInfo.save(commit=False)
-#     event.save()
-
+    event = EventInfo.objects.create(
+        result_id = result, 
+        lecture_id = lecture, 
+        start_time = datetime.now(),  # 동영상 재생 시작 시간 
+        end_time = datetime.now() ,    # 동영상 재생 끝 시간 
+        sleepNum = sleep,
+        awakeNum = awake,
+        stateNo = state,
+        registration_date = datetime.now() 
+    )
+    
+    # return event

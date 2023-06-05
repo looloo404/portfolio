@@ -5,17 +5,12 @@
     <head> <meta charset="utf-8">
     <title>온라인 집중도 시스템</title> 
     <!-- Customized Bootstrap Stylesheet -->
-    <link href="static/css/bootstrap.css" rel="stylesheet">
+    <link href="../static/css/bootstrap.css" rel="stylesheet">
 
     <!-- Template Stylesheet -->
     <!-- <link href="static/style.css" rel="stylesheet"> -->
-    <link href="static/css/ocds.css" rel="stylesheet">
-    <script>
-        function openLecture() {
-           // alert ("test");
-            window.open("./lecture_play", "lecture", "width=1000, height=1000");
-        }
-    </script>
+    <link href="../static/css/ocds.css" rel="stylesheet">
+
     </head>    
     <body>
         <div class="">
@@ -39,61 +34,7 @@
             </div>
         </div>
 
-        <script>
-            function checkUserInfo() {
-                var userIdInput = document.getElementById('userid');
-                var passwordInput = document.getElementById('password');
 
-                // 입력한 값 확인
-                var userId = userIdInput.value;
-                var password = passwordInput.value;
-
-                // 값이 존재하는지 확인
-                if (userId && password) {
-                    // AJAX를 통해 Django 뷰로 데이터 전송
-                    var xhr = new XMLHttpRequest();
-                    xhr.open('POST', '/check_user_info/', true);
-                    xhr.setRequestHeader('Content-Type', 'application/json');
-
-                    var csrftoken = getCookie('csrftoken');
-                    xhr.setRequestHeader('X-CSRFToken', csrftoken);                    
-
-
-                    xhr.onreadystatechange = function() {
-                        if (xhr.readyState === 4 && xhr.status === 200) {
-                            var response = JSON.parse(xhr.responseText);
-                            if (response.valid) {
-                                // 일치하는 경우 SQL 쿼리 실행
-                                window.open("./lecture_sort", "lecture", "width=500, height=500");
-                            } else {
-                                // 일치하지 않는 경우 경고 문구 출력
-                                alert('사용자 정보가 일치하지 않습니다.');
-                            }
-                        }
-                    };
-                    var data = JSON.stringify({ 'userId': userId, 'password': password });
-                    xhr.send(data);
-                } else {
-                    // 입력 필드가 비어있을 경우 경고 문구 출력
-                    alert('ID와 비밀번호를 입력하세요.');
-                }
-            }
-            function getCookie(name) {
-                var cookieValue = null;
-                if (document.cookie && document.cookie !== '') {
-                    var cookies = document.cookie.split(';');
-                    for (var i = 0; i < cookies.length; i++) {
-                        var cookie = cookies[i].trim();
-                        // 토큰 이름으로 시작하는지 확인
-                        if (cookie.substring(0, name.length + 1) === (name + '=')) {
-                            cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                            break;
-                        }
-                    }
-                }
-                return cookieValue;
-            }
-        </script>
         <div class="container">
             <h2 style="font-weight: bold;">수강 강의 목록</h2>
             <p></p>
@@ -101,21 +42,29 @@
                 <table class="table table-bordered">
                     <thead class="thead-light">
                     <tr>
-                        <th width="10%">번호</th>
-                        <th width="40%">강의명</th>
-                        <th width="10%">강사명</th>
-                        <th width="10%">강의시간</th>
-                        <th width="10%">집중도</th>
+                        <th width="0%">순번</th>
+                        <th width="20%">강의명</th>
+                        <th width="5%">강사명</th>
+                        <th width="5%">강의시간</th>
+                        <th width="5%">집중도</th>
                     </tr>
                 </thead>
                 <tbody>
+                    {% for LectureInfo in lectures %}
                     <tr>
-                        <td>1</td>
-                        <td>강의명이 뭐가 좋을까요~   <button onClick='openLecture()'>수강</button></td>
-                        <td><a href="javascript:window.open()">홍길동</a></td>
-                        <td>30:00</td>
-                        <td><button>보기</button></td>
+                        <td width="5%">{% with forloop.counter as index %}{{index}}{% endwith %}</td>
+                        <td width="5%">{{LectureInfo.lecture_name}}    <button onClick='openLecture(123456789, 123456789)'>수강하기</button></td>
+                        <td width="5%">
+                            {% for TutorInfo in tutors %}
+                                {% if TutorInfo.tutor == LectureInfo.tutor_id %}
+                                    <a href='EO_002.html'>{{TutorInfo.tutor_name}}</a>
+                                {% endif %}
+                            {% endfor %}
+                        </td>
+                        <td width="5%">{{LectureInfo.lecture_length}}</td>
+                        <td width="5%"><button Onclick="">보기</button></td>
                     </tr>
+                    {% endfor %}
                 </tbody>
             </table>
             </div>       <!--form-->                        
@@ -123,5 +72,63 @@
     
     </body>
 
+    <script>
+        function openLecture(userid, lectureid) {
+                //alert ("./lecture_play?user="+userid+"&lecture="+lectureid, "lecture", "width=1000, height=1000");
+                window.open("/lecture_play?user="+userid+"&lecture="+lectureid, "lecture", "width=1000, height=1000");
+            }
+        function checkUserInfo() {
+            var userIdInput = document.getElementById('userid');
+            var passwordInput = document.getElementById('password');
 
+            // 입력한 값 확인
+            var userId = userIdInput.value;
+            var password = passwordInput.value;
+
+            // 값이 존재하는지 확인
+            if (userId && password) {
+                // AJAX를 통해 Django 뷰로 데이터 전송
+                var xhr = new XMLHttpRequest();
+                xhr.open('POST', '/check_user_info/', true);
+                xhr.setRequestHeader('Content-Type', 'application/json');
+
+                var csrftoken = getCookie('csrftoken');
+                xhr.setRequestHeader('X-CSRFToken', csrftoken);                    
+
+
+                xhr.onreadystatechange = function() {
+                    if (xhr.readyState === 4 && xhr.status === 200) {
+                        var response = JSON.parse(xhr.responseText);
+                        if (response.valid) {
+                            // 일치하는 경우 listup
+                            window.location.href='./get_lecture_name?user='+userId+'&password='+password;
+                        } else {
+                            // 일치하지 않는 경우 경고 문구 출력
+                            alert('사용자 정보가 일치하지 않습니다.');
+                        }
+                    }
+                };
+                var data = JSON.stringify({ 'userId': userId, 'password': password });
+                xhr.send(data);
+            } else {
+                // 입력 필드가 비어있을 경우 경고 문구 출력
+                alert('ID와 비밀번호를 입력하세요.');
+            }
+        }
+        function getCookie(name) {
+            var cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                var cookies = document.cookie.split(';');
+                for (var i = 0; i < cookies.length; i++) {
+                    var cookie = cookies[i].trim();
+                    // 토큰 이름으로 시작하는지 확인
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+    </script>
 </html>
