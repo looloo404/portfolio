@@ -139,12 +139,12 @@ class VideoCamera(object):
 
     def get_frame(self, resultId):
         
-
         image = self.frame
         image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
         gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
         faces = hog_face_detector(gray)
         state = ''
+        Flag = None
         
         for face in faces:
 
@@ -179,14 +179,15 @@ class VideoCamera(object):
 
             EAR = (left_ear+right_ear)/2
             EAR = round(EAR,2)
-
-            if EAR<0.29:
-                # state = 'close'
-                state = 1
-                # print(EAR)
+            
+            if EAR<0.25:
+                state = 'close'   
+            
+            elif EAR >= 0.25:
+                state = 'open'
+                # state = 0
             else:
-                #state = 'open'
-                state = 0
+                state = 'unrecognized'
                 
     # 강지윤 파트
     
@@ -227,7 +228,6 @@ class VideoCamera(object):
         if self.count != self.video.get(cv2.CAP_PROP_FPS):
             #만약 2초당 한번 데이터 베이스에 넣고 싶으시다면 self.video.get(cv2.CAP_PROP_FPS)에 2를 곱하세요
             if text == 'drowsy':
-                self.sleep += 0.3
                 if state == 'close':
                     self.sleep += 0.7
                 elif state == 'open':
@@ -249,8 +249,13 @@ class VideoCamera(object):
         else:
             # 이쪽 부분에 데이터베이스에 저장하는 코드를 작성하시면 될겁니다. 만약 awake sleep 둘다를 저장하려면
             # 저장 
-            # TB - Event table, Result table 
-            saveEvent(resultId, 123456789, self.sleep, self.awake, state)
+            # TB - Event table, Result table     
+            if self.awake >= self.sleep:
+                Flag = 0
+            else :
+                Flag = 1
+                
+            saveEvent(resultId, 123456789, self.sleep, self.awake, state=Flag)
             
             self.sleep = 0
             self.awake = 0
@@ -265,9 +270,6 @@ class VideoCamera(object):
         cv2.rectangle(image,(xmin,ymin),(xmax,ymax), color = (0,0,255))
         cv2.putText(image, text, (xmin+2, ymin-10), cv2.FONT_HERSHEY_PLAIN,2,color = (0,0,255))
         ### 
-                
-                
-        
         _, jpeg = cv2.imencode('.jpg', image)
         return jpeg.tobytes()
 
@@ -329,6 +331,9 @@ def index(request):
     data = EventInfo.objects.all()
     #user에 해당하는 조건
     arr = [i for i in range(0,len(data))]
+    print(data.state)
+    
+    
     context = {
         'data' : data,
         'range':arr
