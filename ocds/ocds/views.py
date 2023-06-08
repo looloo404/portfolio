@@ -328,12 +328,22 @@ def saveEvent(resultId, lectureId, sleep, awake, state): #ResultInfo, LectureInf
     event = EventInfo.objects.create(
         result_id = result, 
         lecture_id = lecture, 
-        start_time = datetime.now(),  # 동영상 재생 시작 시간 
-        end_time = datetime.now() ,    # 동영상 재생 끝 시간 
+        # start_time = datetime.now(),  # 동영상 재생 시작 시간 
+        # end_time = datetime.now() ,    # 동영상 재생 끝 시간 
         sleepNum = sleep,
         awakeNum = awake,
-        stateNo = state,
+        # stateNo = state,
         registration_date = datetime.now() 
     )
     
     # return event
+    
+def index(request):
+    data = EventInfo.objects.all()
+    #user에 해당하는 조건
+    arr = [i for i in range(0,len(data))]
+    context = {
+        'data' : data,
+        'range':arr
+        }
+    return render(request, 'EO_003.html', context)

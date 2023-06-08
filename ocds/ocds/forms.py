@@ -57,9 +57,9 @@ class EventInfoForm(forms.ModelForm):
         fields = (
                 'eventId', 
                 'resultId', 
-                'lectureId', 
-                'StartTime', 
-                'rndTime', 
+                'lectureId',
+                'awake',
+                'sleep', 
                 'continuedTime',
                 'registrationDate'
         )
