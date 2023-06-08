@@ -138,12 +138,12 @@ class VideoCamera(object):
 
     def get_frame(self, resultId):
         
-
         image = self.frame
         image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
         gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
         faces = hog_face_detector(gray)
         state = ''
+        Flag = None
         
         for face in faces:
 
@@ -178,14 +178,15 @@ class VideoCamera(object):
 
             EAR = (left_ear+right_ear)/2
             EAR = round(EAR,2)
-
-            if EAR<0.29:
-                # state = 'close'
-                state = 1
-                # print(EAR)
+            
+            if EAR<0.25:
+                state = 'close'   
+            
+            elif EAR >= 0.25:
+                state = 'open'
+                # state = 0
             else:
-                #state = 'open'
-                state = 0
+                state = 'unrecognized'
                 
     # 강지윤 파트
     
@@ -226,7 +227,6 @@ class VideoCamera(object):
         if self.count != self.video.get(cv2.CAP_PROP_FPS):
             #만약 2초당 한번 데이터 베이스에 넣고 싶으시다면 self.video.get(cv2.CAP_PROP_FPS)에 2를 곱하세요
             if text == 'drowsy':
-                self.sleep += 0.3
                 if state == 'close':
                     self.sleep += 0.7
                 elif state == 'open':
@@ -247,22 +247,14 @@ class VideoCamera(object):
             #확인 용 코드 매 프레임마다 sleep awake를 확인   
         else:
             # 이쪽 부분에 데이터베이스에 저장하는 코드를 작성하시면 될겁니다. 만약 awake sleep 둘다를 저장하려면
-            #self.sleep과 self.awake 값을 저장하시면 됩니다.
-            # awake와 sleep을 둘다 저장하려면 밑에 if else 문은 지우셔도 됩니다. 0으로 초기화하는 부분은 지우시면 안됩니다.
-            # if self.sleep > self.awake:
-            #    cv2.putText(image, 'You\'re sleeping', (30, 30),
-            #        cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 255), 2)
-                #최종 결과 확인 입니다.
-            
-            #else:
-            #    pass
-                #awake라고 데이터베이스에 넣는다
-
-            
-                
             # 저장 
-            # TB - Event table, Result table 
-            saveEvent(resultId, 123456789, self.sleep, self.awake, state)
+            # TB - Event table, Result table     
+            if self.awake >= self.sleep:
+                Flag = 0
+            else :
+                Flag = 1
+                
+            saveEvent(resultId, 123456789, self.sleep, self.awake, state=Flag)
             
             self.sleep = 0
             self.awake = 0
@@ -277,9 +269,6 @@ class VideoCamera(object):
         cv2.rectangle(image,(xmin,ymin),(xmax,ymax), color = (0,0,255))
         cv2.putText(image, text, (xmin+2, ymin-10), cv2.FONT_HERSHEY_PLAIN,2,color = (0,0,255))
         ### 
-                
-                
-        
         _, jpeg = cv2.imencode('.jpg', image)
         return jpeg.tobytes()
 
@@ -312,7 +301,7 @@ def detectme(request):
         pass
 
 # Event 테이블에 저장 
-def saveEvent(resultId, lectureId, sleep, awake, state): #ResultInfo, LectureInfo):
+def saveEvent(resultId, lectureId, sleep, awake,state): #ResultInfo, LectureInfo):
     #ResultInfo, LectureInfo):
     # print("---------------------")
     # print(resultId)
@@ -327,12 +316,25 @@ def saveEvent(resultId, lectureId, sleep, awake, state): #ResultInfo, LectureInf
     event = EventInfo.objects.create(
         result_id = result, 
         lecture_id = lecture, 
-        start_time = datetime.now(),  # 동영상 재생 시작 시간 
-        end_time = datetime.now() ,    # 동영상 재생 끝 시간 
-        sleepNum = sleep,
-        awakeNum = awake,
+        # start_time = datetime.now(),  # 동영상 재생 시작 시간 
+        # end_time = datetime.now() ,    # 동영상 재생 끝 시간 
+        sleep = sleep,
+        awake = awake,
         stateNo = state,
         registration_date = datetime.now() 
     )
     
     # return event
+    
+def index(request):
+    data = EventInfo.objects.all()
+    #user에 해당하는 조건
+    arr = [i for i in range(0,len(data))]
+    print(data.state)
+    
+    
+    context = {
+        'data' : data,
+        'range':arr
+        }
+    return render(request, 'EO_003.html', context)

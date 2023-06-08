@@ -4,6 +4,8 @@ from . import views
 from django.conf.urls.static import static
 from django.conf import settings
 from ocds import views
+# from django.conf.urls import url, include
+
 from . import views
 
 urlpatterns = [
@@ -13,7 +15,7 @@ urlpatterns = [
     path('lecture_sort/', views.lecture_sort, name='lecture_sort'),
     path('check_user_info/', views.check_user_info, name='check_user_info'),
     path('get_lecture_name/', views.get_lecture_name, name='get_lecture_name'),
-    
+    path('dashboard/', views.index, name = 'dashboard-index')   
 ]
 
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
