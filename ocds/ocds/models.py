@@ -52,6 +52,6 @@ class EventInfo(models.Model):
     # end_time = models.DateTimeField(default=timezone.now)
     sleep = models.FloatField(default=0.0)
     awake = models.FloatField(default=0.0)
-    # stateNo = models.IntegerField(default=0)
+    stateNo = models.IntegerField(default=0)
     continued_time = models.IntegerField(default=0)
     registration_date = models.DateTimeField(default = timezone.now) 

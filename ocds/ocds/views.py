@@ -248,19 +248,6 @@ class VideoCamera(object):
             #확인 용 코드 매 프레임마다 sleep awake를 확인   
         else:
             # 이쪽 부분에 데이터베이스에 저장하는 코드를 작성하시면 될겁니다. 만약 awake sleep 둘다를 저장하려면
-            #self.sleep과 self.awake 값을 저장하시면 됩니다.
-            # awake와 sleep을 둘다 저장하려면 밑에 if else 문은 지우셔도 됩니다. 0으로 초기화하는 부분은 지우시면 안됩니다.
-            # if self.sleep > self.awake:
-            #    cv2.putText(image, 'You\'re sleeping', (30, 30),
-            #        cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 255), 2)
-                #최종 결과 확인 입니다.
-            
-            #else:
-            #    pass
-                #awake라고 데이터베이스에 넣는다
-
-            
-                
             # 저장 
             # TB - Event table, Result table 
             saveEvent(resultId, 123456789, self.sleep, self.awake, state)
@@ -313,7 +300,7 @@ def detectme(request):
         pass
 
 # Event 테이블에 저장 
-def saveEvent(resultId, lectureId, sleep, awake, state): #ResultInfo, LectureInfo):
+def saveEvent(resultId, lectureId, sleep, awake,state): #ResultInfo, LectureInfo):
     #ResultInfo, LectureInfo):
     # print("---------------------")
     # print(resultId)
@@ -330,9 +317,9 @@ def saveEvent(resultId, lectureId, sleep, awake, state): #ResultInfo, LectureInf
         lecture_id = lecture, 
         # start_time = datetime.now(),  # 동영상 재생 시작 시간 
         # end_time = datetime.now() ,    # 동영상 재생 끝 시간 
-        sleepNum = sleep,
-        awakeNum = awake,
-        # stateNo = state,
+        sleep = sleep,
+        awake = awake,
+        stateNo = state,
         registration_date = datetime.now() 
     )
     

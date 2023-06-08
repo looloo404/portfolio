@@ -59,7 +59,8 @@ class EventInfoForm(forms.ModelForm):
                 'resultId', 
                 'lectureId',
                 'awake',
-                'sleep', 
+                'sleep',
+                'stateNo',
                 'continuedTime',
                 'registrationDate'
         )
