@@ -50,18 +50,12 @@
                     </tr>
                 </thead>
                 <tbody>
-                    {% for LectureInfo in lectures %}
+                    {% for EnrollInfo in enrolls %}
                     <tr>
                         <td width="5%">{% with forloop.counter as index %}{{index}}{% endwith %}</td>
-                        <td width="5%">{{LectureInfo.lecture_name}}    <button onClick='openLecture(123456789, 123456789)'>수강하기</button></td>
-                        <td width="5%">
-                            {% for TutorInfo in tutors %}
-                                {% if TutorInfo.tutor == LectureInfo.tutor_id %}
-                                    <a href='EO_002.html'>{{TutorInfo.tutor_name}}</a>
-                                {% endif %}
-                            {% endfor %}
-                        </td>
-                        <td width="5%">{{LectureInfo.lecture_length}}</td>
+                        <td width="5%">{{EnrollInfo.lecture_name}}    <button onClick='openLecture(123456789, 123456789)'>수강하기</button></td>
+                        <td width="5%"><a href='EO_002.html'>{{EnrollInfo.tutor_name}}</a></td>
+                        <td width="5%">{{EnrollInfo.lecture_length}}</td>
                         <td width="5%"><button Onclick="">보기</button></td>
                     </tr>
                     {% endfor %}

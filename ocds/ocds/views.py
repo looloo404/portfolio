@@ -1,7 +1,7 @@
 import json
 from django.shortcuts import render
 from django.http import JsonResponse
-from .models import UserInfo, LectureInfo, ResultInfo, TutorInfo, EventInfo
+from .models import UserInfo, LectureInfo, ResultInfo, TutorInfo, EventInfo, EnrollInfo
 
 from django.shortcuts import render
 from django.views.decorators import gzip
@@ -24,9 +24,8 @@ def get_lecture_name(request):
     
     # form 을 사용하는 방식으로 수정 
     # request로부터 userid 를 받아서 조건에 넣어야 함. 
-    lectures = LectureInfo.objects.all() # 
-    tutors = TutorInfo.objects.all() # 
-    return render(request, 'EO_001.html', {'lectures' : lectures, 'tutors': tutors})
+    enrolls = EnrollInfo.objects.all() # 
+    return render(request, 'EO_001.html', {'enrolls' : enrolls})
 
 
 def lecture_play(request):
@@ -70,7 +69,7 @@ def check_user_info(request):
         # UserInfo 모델에서 사용자 정보와 일치하는지 확인
         try:
 
-            user = UserInfo.objects.get(user_id = user_id, password = password)
+            user = UserInfo.objects.get(user = user_id, password = password)
 
             if (user.user_name != None):
                 valid = True
