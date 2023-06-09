@@ -172,7 +172,7 @@ class VideoCamera(object):
         image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
         gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
         faces = hog_face_detector(gray)
-        state = ''
+        state = 0
         
         for face in faces:
 
