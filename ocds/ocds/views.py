@@ -1,9 +1,13 @@
 import json
 from django.shortcuts import render
 from django.http import JsonResponse
+<<<<<<< HEAD
 from .models import User, Lecture, Result, Tutor, Event, UserLecture
 #from .forms import LectureListForm
 from django.db.models import Prefetch
+=======
+from .models import UserInfo, LectureInfo, ResultInfo, TutorInfo, EventInfo, EnrollInfo
+>>>>>>> 10d876b79038914fdc6f4225920e495ccb639ee1
 
 from django.shortcuts import render
 from django.views.decorators import gzip
@@ -24,6 +28,7 @@ def lecture_list(request):
 
 def get_lecture_name(request):
     
+<<<<<<< HEAD
     userId = request.GET.get('user')
     
     lecture_list = []
@@ -46,6 +51,12 @@ def get_lecture_name(request):
                          "tutor": lecture.tutor_id,
                          "tutor_name" :lecture.tutor.tutor_name})
         
+=======
+    # form 을 사용하는 방식으로 수정 
+    # request로부터 userid 를 받아서 조건에 넣어야 함. 
+    enrolls = EnrollInfo.objects.all() # 
+    return render(request, 'EO_001.html', {'enrolls' : enrolls})
+>>>>>>> 10d876b79038914fdc6f4225920e495ccb639ee1
 
     # print("-------------------------------------------------------------------")
     # print(lectures)
@@ -100,7 +111,11 @@ def check_user_info(request):
         # UserInfo 모델에서 사용자 정보와 일치하는지 확인
         try:
 
+<<<<<<< HEAD
             user = User.objects.get(user = user_id, password = password)
+=======
+            user = UserInfo.objects.get(user = user_id, password = password)
+>>>>>>> 10d876b79038914fdc6f4225920e495ccb639ee1
 
             if (user.user_name != None):
                 valid = True
@@ -169,12 +184,12 @@ class VideoCamera(object):
 
     def get_frame(self, resultId):
         
-
         image = self.frame
         image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
         gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
         faces = hog_face_detector(gray)
         state = ''
+        Flag = None
         
         for face in faces:
 
@@ -209,14 +224,15 @@ class VideoCamera(object):
 
             EAR = (left_ear+right_ear)/2
             EAR = round(EAR,2)
-
-            if EAR<0.29:
-                # state = 'close'
-                state = 1
-                # print(EAR)
+            
+            if EAR<0.25:
+                state = 'close'   
+            
+            elif EAR >= 0.25:
+                state = 'open'
+                # state = 0
             else:
-                #state = 'open'
-                state = 0
+                state = 'unrecognized'
                 
     # 강지윤 파트
     
@@ -257,7 +273,6 @@ class VideoCamera(object):
         if self.count != self.video.get(cv2.CAP_PROP_FPS):
             #만약 2초당 한번 데이터 베이스에 넣고 싶으시다면 self.video.get(cv2.CAP_PROP_FPS)에 2를 곱하세요
             if text == 'drowsy':
-                self.sleep += 0.3
                 if state == 'close':
                     self.sleep += 0.7
                 elif state == 'open':
@@ -279,8 +294,18 @@ class VideoCamera(object):
         else:
             # 이쪽 부분에 데이터베이스에 저장하는 코드를 작성하시면 될겁니다. 만약 awake sleep 둘다를 저장하려면
             # 저장 
+<<<<<<< HEAD
             # TB - Event table, Result table 
             saveEvent(resultId, self.sleep, self.awake, state)
+=======
+            # TB - Event table, Result table     
+            if self.awake >= self.sleep:
+                Flag = 0
+            else :
+                Flag = 1
+                
+            saveEvent(resultId, 123456789, self.sleep, self.awake, state=Flag)
+>>>>>>> 10d876b79038914fdc6f4225920e495ccb639ee1
             
             self.sleep = 0
             self.awake = 0
@@ -295,9 +320,6 @@ class VideoCamera(object):
         cv2.rectangle(image,(xmin,ymin),(xmax,ymax), color = (0,0,255))
         cv2.putText(image, text, (xmin+2, ymin-10), cv2.FONT_HERSHEY_PLAIN,2,color = (0,0,255))
         ### 
-                
-                
-        
         _, jpeg = cv2.imencode('.jpg', image)
         return jpeg.tobytes()
 
@@ -364,6 +386,9 @@ def viewGraphUser(request):
     data = Event.objects.all()
     #user에 해당하는 조건
     arr = [i for i in range(0,len(data))]
+    print(data.state)
+    
+    
     context = {
         'data' : data,
         'range':arr

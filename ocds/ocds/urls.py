@@ -1,5 +1,5 @@
 # from django.contrib import admin
-from django.urls import path
+from django.urls import path, include
 from . import views
 from django.conf.urls.static import static
 from django.conf import settings
@@ -15,8 +15,12 @@ urlpatterns = [
     path('lecture_sort/', views.lecture_sort, name='lecture_sort'),
     path('check_user_info/', views.check_user_info, name='check_user_info'),
     path('get_lecture_name/', views.get_lecture_name, name='get_lecture_name'),
+<<<<<<< HEAD
     path('graphLecture/', views.viewGraphUser, name = 'graphLecture'),
     path('graphTutor/', views.viewGraphTutor, name = 'graphTutor')
+=======
+    path('dashboard/', views.index, name = 'dashboard-index')   
+>>>>>>> 10d876b79038914fdc6f4225920e495ccb639ee1
 ]
 
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

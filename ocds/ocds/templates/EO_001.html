@@ -50,6 +50,7 @@
                     </tr>
                 </thead>
                 <tbody>
+<<<<<<< HEAD
                     {% for lecture in lectures %}
                     <tr>
                         <td width="5%">{% with forloop.counter as index %}{{index}}{% endwith %}                            
@@ -63,6 +64,15 @@
                         </td>
                         <td width="5%"><button Onclick='openGraphLecture({{lecture.user}}, {{lecture.lecture}})' >보기</button>
                         </td>
+=======
+                    {% for EnrollInfo in enrolls %}
+                    <tr>
+                        <td width="5%">{% with forloop.counter as index %}{{index}}{% endwith %}</td>
+                        <td width="5%">{{EnrollInfo.lecture_name}}    <button onClick='openLecture(123456789, 123456789)'>수강하기</button></td>
+                        <td width="5%"><a href='EO_002.html'>{{EnrollInfo.tutor_name}}</a></td>
+                        <td width="5%">{{EnrollInfo.lecture_length}}</td>
+                        <td width="5%"><button Onclick="">보기</button></td>
+>>>>>>> 10d876b79038914fdc6f4225920e495ccb639ee1
                     </tr>
                     {% endfor %}
                 </tbody>
