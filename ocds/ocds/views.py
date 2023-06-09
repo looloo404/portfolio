@@ -1,7 +1,9 @@
 import json
 from django.shortcuts import render
 from django.http import JsonResponse
-from .models import UserInfo, LectureInfo, ResultInfo, TutorInfo, EventInfo
+from .models import User, Lecture, Result, Tutor, Event, UserLecture
+#from .forms import LectureListForm
+from django.db.models import Prefetch
 
 from django.shortcuts import render
 from django.views.decorators import gzip
@@ -22,31 +24,59 @@ def lecture_list(request):
 
 def get_lecture_name(request):
     
-    # form 을 사용하는 방식으로 수정 
-    # request로부터 userid 를 받아서 조건에 넣어야 함. 
-    lectures = LectureInfo.objects.all() # 
-    tutors = TutorInfo.objects.all() # 
-    return render(request, 'EO_001.html', {'lectures' : lectures, 'tutors': tutors})
+    userId = request.GET.get('user')
+    
+    lecture_list = []
+    results = UserLecture.objects.filter(user=userId, finish=0)
+    #results = Lecture.objects.prefetch_related('tutor')#.filter(lecture__lecture_id=123456789)
+    #.filter(user=userId)#.get(user=userId)#.values_list("user", "lecture","lecture_name" )
+    
+    for result in results:
+        print(result)
+        
+        lecture_id = result.lecture
+        lectures = Lecture.objects.select_related('tutor').filter(lectures__lecture_id=lecture_id)
+        for lecture in lectures:
+            # print(lecture)
+            # print("**********")
+            lecture_list.append({"user": userId,
+                         "lecture": lecture.lecture,
+                         "lecture_name": lecture.lecture_name,
+                         "lecture_length": lecture.lecture_length,
+                         "tutor": lecture.tutor_id,
+                         "tutor_name" :lecture.tutor.tutor_name})
+        
 
+    # print("-------------------------------------------------------------------")
+    # print(lectures)
 
+    return render(request, 'EO_001.html', {'lectures' : lecture_list})
+
+# 수강 화면 표시 
 def lecture_play(request):
     # print(request)
-
-    userinfo = UserInfo.objects.get(user_id=request.GET.get('user'))
-    lecture = LectureInfo.objects.get(lecture_id = request.GET.get('lecture'))
-    
-    result = ResultInfo.objects.create(
-        user_id = userinfo, # request.UserInfo.user_id, 
-        lecture_id = lecture, # request.UserInfo.lecture_id,
+    if request.method == 'GET':
+        userId = request.GET.get('user')
+        lectureId = request.GET.get('lecture')
+    else:
+        # POST 방식 
+        print(request)
+ 
+    user = User.objects.get(user=userId)
+    lecture = Lecture.objects.get(lecture=lectureId)
+    result = Result.objects.create(
+        user = user, 
+        lecture = lecture, 
         capture_start = datetime.now().time(),
         capture_end = datetime.now().time(),
         start_log = datetime.now().time(),
         end_log = datetime.now().time(),
         registration_date = datetime.now()
     )
-    print("*****************")
-    print(result)
-    print("*****************")
+    # print("*****************")
+    # print(result)
+    # print("*****************")
+    
     return render(request, 'EO_002.html', {'result':result})   
 
 def lecture_sort(request):
@@ -70,14 +100,14 @@ def check_user_info(request):
         # UserInfo 모델에서 사용자 정보와 일치하는지 확인
         try:
 
-            user = UserInfo.objects.get(user_id = user_id, password = password)
+            user = User.objects.get(user = user_id, password = password)
 
             if (user.user_name != None):
                 valid = True
             else:
                 valid = False 
 
-        except UserInfo.DoesNotExist:
+        except User.DoesNotExist:
             valid = False
           
        
@@ -250,7 +280,7 @@ class VideoCamera(object):
             # 이쪽 부분에 데이터베이스에 저장하는 코드를 작성하시면 될겁니다. 만약 awake sleep 둘다를 저장하려면
             # 저장 
             # TB - Event table, Result table 
-            saveEvent(resultId, 123456789, self.sleep, self.awake, state)
+            saveEvent(resultId, self.sleep, self.awake, state)
             
             self.sleep = 0
             self.awake = 0
@@ -277,9 +307,9 @@ class VideoCamera(object):
 
 
 def gen(camera, resultId):
-    print("gen------------resultId-----")
-    print(resultId)
-    resultId = str(resultId)
+    # print("gen------------resultId-----")
+    # print(resultId)
+    # resultId = str(resultId)
     while True:
         frame = camera.get_frame(resultId)
         yield(b'--frame\r\n'
@@ -288,10 +318,13 @@ def gen(camera, resultId):
 
 @gzip.gzip_page
 def detectme(request):
-    # print(request.GET.get('resultId'))
-    # print("################")
-    resultId = request.GET.get('resultId')
-    lectureId = request.GET.get('lectuerId')
+    
+    print("################")
+    resultId = request.GET.get('result')
+    print(resultId)
+    # result = Result.objects.get(result=resultId)
+    # print(result)
+    
     try:
         cam = VideoCamera()
         return StreamingHttpResponse(gen(cam, resultId), content_type="multipart/x-mixed-replace;boundary=frame")
@@ -300,33 +333,35 @@ def detectme(request):
         pass
 
 # Event 테이블에 저장 
-def saveEvent(resultId, lectureId, sleep, awake,state): #ResultInfo, LectureInfo):
-    #ResultInfo, LectureInfo):
-    # print("---------------------")
-    # print(resultId)
-    # print("---------------------")
-    # print(lectureId)
-    result = ResultInfo.objects.get(result_id = resultId)
-    # print(result)
-    lecture = LectureInfo.objects.get(lecture_id = lectureId)
+def saveEvent(resultId, sleep, awake,state): #ResultInfo, LectureInfo):
+
+    result = Result.objects.get(result = resultId)
+    lectureId = result.lecture.lecture
+    print(lectureId)
+    lecture = Lecture.objects.get(lecture = lectureId)
     # print(lecture)
-    # print("---------------------")
     
-    event = EventInfo.objects.create(
-        result_id = result, 
-        lecture_id = lecture, 
+    event = Event.objects.create(
+        result = result, 
+        lecture = lecture, 
         # start_time = datetime.now(),  # 동영상 재생 시작 시간 
         # end_time = datetime.now() ,    # 동영상 재생 끝 시간 
-        sleep = sleep,
-        awake = awake,
+        start_time = datetime.now(),  # 동영상 재생 시작 시간 
+        end_time = datetime.now() ,    # 동영상 재생 끝 시간 
+        sleepNum = sleep,
+        awakeNum = awake,
         stateNo = state,
         registration_date = datetime.now() 
     )
+ 
     
-    # return event
-    
-def index(request):
-    data = EventInfo.objects.all()
+
+# 수강자 집중도 그래프 화면 표시    
+def viewGraphUser(request):
+    userId = request.GET.get('user')
+    lectureId = request.GET.get('lecture')
+
+    data = Event.objects.all()
     #user에 해당하는 조건
     arr = [i for i in range(0,len(data))]
     context = {
@@ -334,3 +369,18 @@ def index(request):
         'range':arr
         }
     return render(request, 'EO_003.html', context)
+
+# 강사의 과목에 해당하는 집중도 그래프 화면 표시    
+def viewGraphTutor(request):
+    userId = request.GET.get('lecture')
+    tutorId = request.GET.get('tutor')
+    # 수정 필요 강사의 그 과목에 해당하는 그래프 그리기 
+    
+    data = Event.objects.all()
+    #user에 해당하는 조건
+    arr = [i for i in range(0,len(data))]
+    context = {
+        'data' : data,
+        'range':arr
+        }
+    return render(request, 'EO_004.html', context)

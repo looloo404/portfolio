@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Chart JS tutorial for beginners</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
+  </head>
+  <body class = 'bg-success'>
+
+    <div class = 'col-8 offset-2 my-5'>
+        <div class = 'card'>
+            <div class = 'card-body'>
+            <h5>Drowsy</h5>
+            <hr>
+            <canvas id="myChart" width ='400', height = '270'></canvas>
+            </div>
+        </div>
+    </div>
+    <div class = 'col-8 offset-2 my-5'>
+      <div class = 'card'>
+          <div class = 'card-body'>
+          <h5>awake</h5>
+          <hr>
+          <canvas id="myChart2" width ='400', height = '270'></canvas>
+          </div>
+      </div>
+  </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.3.0/dist/chart.umd.min.js"></script>
+
+    <script>
+    let array = [{%for data in data%} '{{ data.sleep|floatformat:"2" }}', {% endfor %}]
+    console.log(array)
+
+    const ctx = document.getElementById('myChart');
+    
+    var chart = new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: [{%for num in range%} '{{ num|floatformat:"0" }}', {% endfor %}],
+        datasets: [{
+          label: 'My First dataset',
+          data: [{%for data in data%} '{{ data.sleep|floatformat:"2" }}', {% endfor %}],
+          borderColor:['blue'],
+          borderWidth: 1,
+        }]
+      },
+      options: {
+        scales: {
+          y: {
+            beginAtZero: true
+          }
+        }
+      }
+    });
+
+    const ctx2 = document.getElementById('myChart2');
+
+    var chart2 = new Chart(ctx2, {
+      type: 'line',
+      data: {
+        labels: [{%for num in range%} '{{ num|floatformat:"0" }}', {% endfor %}],
+        datasets: [{
+          label: 'My First dataset',
+          data: [{%for data in data%} '{{ data.awake|floatformat:"2" }}', {% endfor %}],
+          backgroundColor : 'rgb(255,99,132)',
+          borderColor:['red'],
+          borderWidth: 1,
+        }]
+      },
+      options: {
+        scales: {
+          y: {
+            beginAtZero: true
+          }
+        }
+      }
+    });
+
+
+
+
+
+
+
+  
+
+
+
+</script>
+
+</body>
+</html>

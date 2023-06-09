@@ -50,19 +50,19 @@
                     </tr>
                 </thead>
                 <tbody>
-                    {% for LectureInfo in lectures %}
+                    {% for lecture in lectures %}
                     <tr>
-                        <td width="5%">{% with forloop.counter as index %}{{index}}{% endwith %}</td>
-                        <td width="5%">{{LectureInfo.lecture_name}}    <button onClick='openLecture(123456789, 123456789)'>수강하기</button></td>
-                        <td width="5%">
-                            {% for TutorInfo in tutors %}
-                                {% if TutorInfo.tutor == LectureInfo.tutor_id %}
-                                    <a href='EO_002.html'>{{TutorInfo.tutor_name}}</a>
-                                {% endif %}
-                            {% endfor %}
+                        <td width="5%">{% with forloop.counter as index %}{{index}}{% endwith %}                            
                         </td>
-                        <td width="5%">{{LectureInfo.lecture_length}}</td>
-                        <td width="5%"><button Onclick="">보기</button></td>
+                        <td width="5%">{{lecture.lecture_name}}    
+                            <button onClick='openLecture({{lecture.user}}, {{lecture.lecture}})'>수강하기</button>
+                        </td>
+                        <td width="5%"><a href='#' Onclick='window.open("/graphTutor?lecture="+{{lecture.lecture}}+"&tutor="+{{lecture.tutor}}, "lecture", "width=1000, height=1000")'>{{lecture.tutor_name}}</a>
+                        </td>
+                        <td width="5%">{{lecture.lecture_length}}                            
+                        </td>
+                        <td width="5%"><button Onclick='openGraphLecture({{lecture.user}}, {{lecture.lecture}})' >보기</button>
+                        </td>
                     </tr>
                     {% endfor %}
                 </tbody>
@@ -76,7 +76,15 @@
         function openLecture(userid, lectureid) {
                 //alert ("./lecture_play?user="+userid+"&lecture="+lectureid, "lecture", "width=1000, height=1000");
                 window.open("/lecture_play?user="+userid+"&lecture="+lectureid, "lecture", "width=1000, height=1000");
-            }
+        }
+        function openGraphLecture(userid, lectureid) {
+            //alert ("./lecture_play?user="+userid+"&lecture="+lectureid, "lecture", "width=1000, height=1000");
+            window.open("/graphLecture?user="+userid+"&lecture="+lectureid, "lecture", "width=1000, height=1000");
+        }
+        function openGraphTutor(lectureid, tutorid) {
+            //alert ("./lecture_play?user="+userid+"&lecture="+lectureid, "lecture", "width=1000, height=1000");
+            window.open("/graphTutor?lecture="+lectureid+"&tutor="+tutorid, "lecture", "width=1000, height=1000");
+        }
         function checkUserInfo() {
             var userIdInput = document.getElementById('userid');
             var passwordInput = document.getElementById('password');
@@ -101,7 +109,7 @@
                         var response = JSON.parse(xhr.responseText);
                         if (response.valid) {
                             // 일치하는 경우 listup
-                            window.location.href='./get_lecture_name?user='+userId+'&password='+password;
+                            window.location.href='./get_lecture_name?user='+userId;
                         } else {
                             // 일치하지 않는 경우 경고 문구 출력
                             alert('사용자 정보가 일치하지 않습니다.');

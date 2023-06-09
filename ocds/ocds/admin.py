@@ -1,12 +1,13 @@
 from django.contrib import admin
-from .models import UserInfo, TutorInfo, LectureInfo, ResultInfo, EventInfo
+from .models import User, Tutor, Lecture, Result, Event, UserLecture
 
 
 # Register your models here.
-admin.site.register(UserInfo)
-admin.site.register(TutorInfo)
-admin.site.register(LectureInfo) 
-admin.site.register(ResultInfo) 
-admin.site.register(EventInfo) 
+admin.site.register(User)
+admin.site.register(Tutor)
+admin.site.register(Lecture) 
+admin.site.register(Result) 
+admin.site.register(Event) 
+admin.site.register(UserLecture) 
 ##//, LectureInfo, ResultInfo, EventInfo)
 

@@ -15,8 +15,8 @@ urlpatterns = [
     path('lecture_sort/', views.lecture_sort, name='lecture_sort'),
     path('check_user_info/', views.check_user_info, name='check_user_info'),
     path('get_lecture_name/', views.get_lecture_name, name='get_lecture_name'),
-    path('dashboard/', views.index, name = 'dashboard-index')
-    
+    path('graphLecture/', views.viewGraphUser, name = 'graphLecture'),
+    path('graphTutor/', views.viewGraphTutor, name = 'graphTutor')
 ]
 
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
