@@ -172,7 +172,8 @@ class VideoCamera(object):
         image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
         gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
         faces = hog_face_detector(gray)
-        state = 0
+        stateNo = 0
+        state = ''
         
         for face in faces:
 
@@ -209,12 +210,10 @@ class VideoCamera(object):
             EAR = round(EAR,2)
 
             if EAR<0.29:
-                # state = 'close'
-                state = 1
+                state = 'close'
                 # print(EAR)
             else:
-                #state = 'open'
-                state = 0
+                state = 'open'
                 
     # 강지윤 파트
     
@@ -278,7 +277,13 @@ class VideoCamera(object):
             # 이쪽 부분에 데이터베이스에 저장하는 코드를 작성하시면 될겁니다. 만약 awake sleep 둘다를 저장하려면
             # 저장 
             # TB - Event table, Result table 
-            saveEvent(resultId, self.sleep, self.awake, state)
+            
+            if self.awake > self.sleep:
+                stateNo = 0
+            else:
+                stateNo = 1
+                
+            saveEvent(resultId, self.sleep, self.awake, stateNo)
             
             self.sleep = 0
             self.awake = 0
@@ -361,14 +366,32 @@ def viewGraphUser(request):
     
     # 수강자의 선택 과목에 대한 조건을 추가 
     data = Event.objects.all()
+    
+    sleepy_counts = 0
+    awake_counts = 0
+
+    
+    for d in data :
+        if d.stateNo == 0:
+            awake_counts+=1
+        else:
+            sleepy_counts+=1
+    
+    merge_counts = [sleepy_counts, awake_counts]
+    
+    print(merge_counts)
         
     #user에 해당하는 조건
     arr = [i for i in range(0,len(data))]
     context = {
         'data' : data,
-        'range':arr
+        'range':arr,
+        'counts':merge_counts,
         }
     return render(request, 'EO_003.html', context)
+
+
+
 
 # 강사의 과목에 해당하는 집중도 그래프 화면 표시    
 def viewGraphTutor(request):
@@ -378,9 +401,12 @@ def viewGraphTutor(request):
     
     data = Event.objects.all()
     #user에 해당하는 조건
+
+    
     arr = [i for i in range(0,len(data))]
     context = {
         'data' : data,
-        'range':arr
+        'range':arr,
+  
         }
     return render(request, 'EO_004.html', context)

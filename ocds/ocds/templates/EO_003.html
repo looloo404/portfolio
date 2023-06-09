@@ -8,14 +8,22 @@
   </head>
   <body class = 'bg-success'>
 
-    <div class = 'col-8 offset-2 my-5'>
-        <div class = 'card'>
+    <div class = 'card-group'>
+        <div class = 'card' >
             <div class = 'card-body'>
             <h5>Summary</h5>
             <hr>
-            <canvas id="myChart" width ='400', height = '270'></canvas>
+            <canvas id="myChart" width ='400', height = '350'></canvas>
             </div>
         </div>
+
+        <div class = 'card' width = 300>
+          <div class = 'card-body'>
+          <h5>Summary</h5>
+          <hr>
+          <canvas id="pie_chart" width ='400', height = '300'></canvas>
+          </div>
+      </div>
     </div>
 
 
@@ -58,6 +66,25 @@
         }
       }
     });
+
+
+
+    let pie_chart = document.getElementById('pie_chart').getContext('2d');
+
+    var chart2 = new Chart(pie_chart,{
+      type : 'doughnut',
+      data:{
+        labels:['awake','sleep'],
+        datasets:[
+        {
+          label:'percentage',
+          data: [{%for c in counts%} '{{ c }}', {% endfor %}],
+        }],
+      }
+    }
+
+
+    )
 
 
 </script>
