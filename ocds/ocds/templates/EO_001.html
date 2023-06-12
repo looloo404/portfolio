@@ -147,7 +147,7 @@
                         <td width="5%">{{lecture.lecture_name}}    
                             <button onClick='openLecture({{lecture.user}}, {{lecture.lecture}})'>수강하기</button>
                         </td>
-                        <td width="5%"><a href='#' Onclick='window.open("/graphTutor?lecture="+{{lecture.lecture}}+"&tutor="+{{lecture.tutor}}, "lecture", "width=1000, height=1000")'>{{lecture.tutor_name}}</a>
+                        <td width="5%"><a href='#' Onclick='window.location.href = "/graphTutor?lecture="+{{lecture.lecture}}+"&tutor="+{{lecture.tutor}}, "lecture";'>{{lecture.tutor_name}}</a>
                         </td>
                         <td width="5%">{{lecture.lecture_length}}                            
                         </td>
@@ -165,15 +165,15 @@
     <script>
         function openLecture(userid, lectureid) {
                 //alert ("./lecture_play?user="+userid+"&lecture="+lectureid, "lecture", "width=1000, height=1000");
-                window.open("/lecture_play?user="+userid+"&lecture="+lectureid, "lecture", "width=1000, height=1000");
+                window.location.href = "/lecture_play?user="+userid+"&lecture="+lectureid, "lecture";
         }
         function openGraphLecture(userid, lectureid) {
             //alert ("./lecture_play?user="+userid+"&lecture="+lectureid, "lecture", "width=1000, height=1000");
-            window.open("/graphLecture?user="+userid+"&lecture="+lectureid, "lecture", "width=1000, height=1000");
+            window.location.href = "/graphLecture?user="+userid+"&lecture="+lectureid, "lecture";
         }
         function openGraphTutor(lectureid, tutorid) {
             //alert ("./lecture_play?user="+userid+"&lecture="+lectureid, "lecture", "width=1000, height=1000");
-            window.open("/graphTutor?lecture="+lectureid+"&tutor="+tutorid, "lecture", "width=1000, height=1000");
+            window.location.href = "/graphTutor?lecture="+lectureid+"&tutor="+tutorid, "lecture";
         }
         function checkUserInfo() {
             var userIdInput = document.getElementById('userid');
