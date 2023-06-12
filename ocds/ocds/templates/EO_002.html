@@ -13,11 +13,66 @@
 
         }
     </script>
-    </head>    
+    </head>
+    <style>
+        @font-face {
+    font-family: 'GangwonEduPowerExtraBoldA';
+    src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2201-2@1.0/GangwonEduPowerExtraBoldA.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+    }
+    *{
+        font-family: 'GangwonEduPowerExtraBoldA';
+    }
+   
+    .hd{
+        margin: 100px;
+        position: absolute;
+        left: 33%;
+        font-size: 50px;
+        color: #4b5eaa;
+    }
+    .webcam{
+        margin: 170px 300px 0px 300px;
+        position: absolute;
+        left: 30%;
+        color: #4b5eaa;
+        font-size: 30px;
+    }
+    table{
+        margin: 160px 130px 130px 100px;
+        position: absolute;
+        left: 32%;
+        top: 30%;
+    }
+    .vd{
+        margin: 250px 130px -130px 100px;
+        position: absolute;
+        left: 39.4%;
+        top: 37%;
+        font-size: 27px;
+        color: #4b5eaa;
+    }
+    .col-md-16{
+        position: absolute;
+        height: 600px;
+        left: 4%;
+        top: 6%;
+    }
+    .row{
+        background-color: #d4e3f5;
+        border-radius: 14px;
+        position: absolute;
+        left: 31.7%;
+        top: 73%;
+        width: 695px;
+        height: 410px;
+    }
+    </style>  
     <body>
         <div >
             <header class="page-header">
-                <h1>온라인 수업 수강 화면</h1>
+                <h1 class="hd">온라인 수업 수강 화면</h1>
             </header>
             <div >
                 <div >
@@ -31,7 +86,7 @@
                     </video>
                     <iframe src =https://www.youtube.com/watch?v=rvf2yzcfhXE" frameborder="1" allowfullscreen encoding="utf-8"></iframe> --> -->
                     {% block body %}
-                    <h1>웹캠 보기</h1>
+                    <h1 class="webcam">웹캠 보기</h1>
                     <table>
                         <tr>
                             <td >
@@ -45,7 +100,7 @@
                 {% endblock %}
                     <div >
                         <header class="page-header">
-                            <h1>Video Detail</h1>
+                            <h1 class="vd">Video Detail</h1>
                         </header>
                         <div class="row">
                             <div class="col-md-16">

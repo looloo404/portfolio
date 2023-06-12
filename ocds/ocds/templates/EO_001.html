@@ -11,22 +11,112 @@
     <!-- <link href="static/style.css" rel="stylesheet"> -->
     <link href="../static/css/ocds.css" rel="stylesheet">
 
-    </head>    
+    </head>
+    <style>
+        @font-face {
+        font-family: 'GangwonEduPowerExtraBoldA';
+        src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2201-2@1.0/GangwonEduPowerExtraBoldA.woff') format('woff');
+        font-weight: normal;
+        font-style: normal;
+        }
+        *{
+            font-family: 'GangwonEduPowerExtraBoldA';
+        }
+        .best_taital{
+            color: #4b5eaa
+        }
+    
+        .top7{
+            margin-top: 150px;
+        }
+        
+        .container772{
+            width: 500px;
+            height: 380px;
+            background-color: #d4e3f5;
+            position: absolute;
+            left:36.9%;
+            top:27%;
+            border-radius: 50px;
+            margin-top: 40px;
+        }
+        #userid{
+            width: 400px;
+            padding: 7px 7px 7px 12px;
+            margin: 30px 10px 5px 20px;
+            border-radius: 10px;
+            border: 1.5px solid #4b5eaa;
+            font-size: 20px;
+            margin-left: 40px
+            
+        }
+        #password{
+            width: 400px;
+            padding: 22px 7px 22px 12px;
+            margin: 10px 10px 15px 20px;
+            border-radius: 10px;
+            border: 1.5px solid #4b5eaa;
+            font-size: 20px;
+            margin-left: 40px
+        }
+        textarea::placeholder {
+        color: #98a5d4;
+        }
+        .text777{
+            color: #4b5eaa;
+            font-size: 30px;
+        }
+        .btn{
+            border-radius: 15px;
+            background-color: #4b5eaa;
+            width: 300px;
+            height: 60px;
+            margin-bottom: 100px;
+            font-size: 27px;
+        }
+        .btn:hover{
+            background-color: #273776;
+        }
+        .container{
+            top: 75%;
+            left: 20%;
+            position: absolute;
+            height: 500px;
+        }
+        .container h2{
+            font-size: 30px;
+            color: #4b5eaa;
+        }
+        .table{
+            border-radius: 10px;
+            border: 1.5px solid #4b5eaa;
+        }
+        .thead-light{
+            border-radius: 10px;
+            border: 1.5px solid #4b5eaa;
+        }
+        tbody button{
+            padding: 5px 10px 0px 10px;
+            border-radius: 5px;
+            background-color: #6a77ab;
+            color: #ffffff;
+        }
+    </style>
     <body>
-        <div class="">
+        <div class="top7">
             <div width="200px"> 
                 <h1 class="best_taital">온라인 수강 집중도 시스템</h1>
-                <div class="container p-5 my-5 bg-dark text-white">
-                    <div class="bg-light d-flex flex-column p-5" >
+                <div class="container77">
+                    <div class="container772" >
                         <form id="user-info-form" onsubmit="return checkUserInfo();">
                             {% csrf_token %}
-                            <h3 class="text-black mb-3" style="align-content: center;text-align: center;">사용자 정보 입력</h3></form>
+                            <h3 class="text777" style="align-content: center;text-align: center;">사용자 정보 입력</h3></form>
                             <div class="form-group" id="" style="align-content: center;text-align: center;align-self: center;">
                                 <input type="text" class="form-control" id="userid" placeholder="ID를 입력하세요" style="height: 40px;">
                                 <br>
                                 <input type="password" class="form-control bg-light" id="password" placeholder="비밀번호를 입력하세요" style="height: 40px;">
                                 <br>
-                                <button class="btn btn-success w-100 py-3" type="submit" onclick="checkUserInfo(); return false;">강의 목록 보기</button>
+                                <button class="btn btn-success" type="submit" onclick="checkUserInfo(); return false;">강의 목록 보기</button>
                             </div>
                         </form>
                     </div>
@@ -38,8 +128,8 @@
         <div class="container">
             <h2 style="font-weight: bold;">수강 강의 목록</h2>
             <p></p>
-            <div class="">
-                <table class="table table-bordered">
+            <div class="kk">
+                <table class="table table-bordered #4b5eaa">
                     <thead class="thead-light">
                     <tr>
                         <th width="0%">순번</th>
