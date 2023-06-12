@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <title>Admin Dashboard</title>
+
+    <!-- Montserrat Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@100;200;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+    <!-- Material Icons -->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined" rel="stylesheet">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="../static/css/chart.css">
+  </head>
+  <body>
+    <div class="grid-container">
+
+      <!-- Main -->
+      <main class="main-container">
+        <div class="main-title">
+          <h2>집중도 결과</h2>
+        </div>
+
+        <div class="main-cards">
+
+          {% comment %} <div class="card">
+            <div class="card-inner">
+              <h3>비집중 비율</h3>
+              <span class="material-icons-outlined">inventory_2</span>
+            </div>
+            <h1>40%</h1>
+          </div> {% endcomment %}
+
+          <div class="card">
+            <div class="card-inner">
+              <h3>수강중인 강의</h3>
+              <span class="material-icons-outlined">category</span>
+            </div>
+            <h1>{{ numOfLectures }}</h1>
+          </div>
+
+          <div class="card">
+            <div class="card-inner">
+              <h3>수강중 학생</h3>
+              <span class="material-icons-outlined">groups</span>
+            </div>
+            <h1>{{ numOfUsers }}</h1>
+          </div>
+
+          {% comment %} <div class="card">
+            <div class="card-inner">
+              <h3>ALERTS</h3>
+              <span class="material-icons-outlined">notification_important</span>
+            </div>
+            <h1>56</h1>
+          </div> {% endcomment %}
+
+        </div>
+
+        <div class="charts">
+
+        <div class="charts-card">
+            <h2 class="chart-title">집중 흐름도</h2>
+            <div id="area-chart"></div>
+        </div>
+
+          <div class="charts-card">
+            <h2 class="chart-title">집중 비율</h2>
+            <div id="pie-chart"></div>
+          </div>
+
+
+
+        </div>
+      </main>
+      <!-- End Main -->
+
+    </div>
+
+    <!-- Scripts -->
+    <!-- ApexCharts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/apexcharts/3.35.5/apexcharts.min.js"></script>
+    <!-- Custom JS -->
+    <script type="text/javascript">
+      var sleep_label = [{%for data in data%} '{{ data.sleep|floatformat:"2" }}', {% endfor %}]
+      var awake_label = [{%for data in data%} '{{ data.awake|floatformat:"2" }}', {% endfor %}]
+      var Date_label = [{%for data in data%} '{{ data.registration_date  }}', {% endfor %}]
+      var range =[{%for num in range%} '{{ num|floatformat:"0" }}', {% endfor %}]
+      numOfAwake = {{ numOfAwake }}
+      numOfSleep = {{ numOfSleep }}
+    </script>
+
+    <script src="../static/js/chart.js"></script>
+
+
+
+  </body>
+</html>

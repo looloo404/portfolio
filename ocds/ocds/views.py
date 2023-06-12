@@ -2,7 +2,7 @@ import json
 from django.shortcuts import render
 from django.http import JsonResponse
 from .models import User, Lecture, Result, Tutor, Event, UserLecture
-
+from django.db.models import Sum, Count
 from django.shortcuts import render
 from django.views.decorators import gzip
 from django.http import StreamingHttpResponse
@@ -364,31 +364,43 @@ def viewGraphUser(request):
     userId = request.GET.get('user')
     lectureId = request.GET.get('lecture')
     
+    print('userId : ',userId)
+    print('lectureId : ',lectureId)
     # 수강자의 선택 과목에 대한 조건을 추가 
+    
     data = Event.objects.all()
     
-    sleepy_counts = 0
-    awake_counts = 0
-
+    # 유저수와 강의수 
+    # -----------------------------------------
+    numOfUsers = User.objects.aggregate(Count('user'))
+    print(numOfUsers)
+    numOfLectures = Lecture.objects.aggregate(Count('lecture'))
+    print(numOfLectures)
+    # ------------------------------------------
+    # END
+           
+    #sleep, awake 갯수 
+    #------------------------------------------\
+    numOfSleep = len(Event.objects.filter(stateNo = 1))
+    numOfAwake = len(Event.objects.filter(stateNo = 0))
+    print('numOfAwake : ', numOfAwake)
+    print('numOfSleep : ', numOfSleep)
     
-    for d in data :
-        if d.stateNo == 0:
-            awake_counts+=1
-        else:
-            sleepy_counts+=1
     
-    merge_counts = [sleepy_counts, awake_counts]
-    
-    print(merge_counts)
-        
+           
+           
     #user에 해당하는 조건
     arr = [i for i in range(0,len(data))]
     context = {
         'data' : data,
         'range':arr,
-        'counts':merge_counts,
+        'numOfUsers':numOfUsers['user__count'],
+        'numOfLectures':numOfLectures['lecture__count'],
+        'numOfAwake':numOfAwake,
+        'numOfSleep':numOfSleep
         }
-    return render(request, 'EO_003.html', context)
+    # return render(request, 'EO_003.html', context)
+    return render(request, 'test.html', context)
 
 
 
