@@ -84,12 +84,13 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/apexcharts/3.35.5/apexcharts.min.js"></script>
     <!-- Custom JS -->
     <script type="text/javascript">
-      var sleep_label = [{%for data in data%} '{{ data.sleep|floatformat:"2" }}', {% endfor %}]
-      var awake_label = [{%for data in data%} '{{ data.awake|floatformat:"2" }}', {% endfor %}]
-      var Date_label = [{%for data in data%} '{{ data.registration_date  }}', {% endfor %}]
+      var sleep_Label = [{%for data in data%} '{{ data.sleep|floatformat:"2" }}', {% endfor %}]
+      var awake_Label = [{%for data in data%} '{{ data.awake|floatformat:"2" }}', {% endfor %}]
+      var date_Label = [{%for data in data%}  Date('{{ data.registration_date  }}'), {% endfor %}]
       var range =[{%for num in range%} '{{ num|floatformat:"0" }}', {% endfor %}]
       numOfAwake = {{ numOfAwake }}
       numOfSleep = {{ numOfSleep }}
+
     </script>
 
     <script src="../static/js/chart.js"></script>

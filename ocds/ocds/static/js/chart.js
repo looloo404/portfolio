@@ -7,13 +7,16 @@ var areaCharts = {
     series: [{
     name: 'SLEEP',
     type: 'area',
-    data: sleep_label
-  }, {
+    data: sleep_Label
+  },
+  {
     name: 'AWAKE',
     type: 'line',
-    data: awake_label
-  }],
-    chart: {
+    data: awake_Label
+  },
+
+],
+  chart: {
     type: 'line',
     height : '400px',
     foreColor: '#FFFFFF'
@@ -33,16 +36,19 @@ var areaCharts = {
   yaxis: [
     {
       title: {
-        text: 'Sleep',
+        text: 'Y축 : SCORE',
       },
     },
     {
       opposite: true,
       title: {
-        text: 'Awake',
+        text: 'X축 : 수강시간(초)',
       },
     },
+    
+
   ],
+
   
   tooltip: {
     shared: true,
