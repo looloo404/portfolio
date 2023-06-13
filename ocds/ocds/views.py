@@ -30,23 +30,25 @@ def get_lecture_name(request):
     #.filter(user=userId)#.get(user=userId)#.values_list("user", "lecture","lecture_name" )
     
     for result in results:
-        print(result)
+        # print(result)
         
         lecture_id = result.lecture
         lectures = Lecture.objects.select_related('tutor').filter(lectures__lecture_id=lecture_id)
         for lecture in lectures:
             # print(lecture)
-            # print("**********")
+            strTime = str(lecture.lecture_length)
+            # print(strTime)
+            #inStrTime = strTime.split()
+            # print(strTime[0:2]+':'+strTime[2:4])
             lecture_list.append({"user": userId,
                          "lecture": lecture.lecture,
                          "lecture_name": lecture.lecture_name,
-                         "lecture_length": lecture.lecture_length,
+                         "lecture_length": strTime[0:2]+':'+strTime[2:4], 
                          "tutor": lecture.tutor_id,
                          "tutor_name" :lecture.tutor.tutor_name})
         
-
-    # print("-------------------------------------------------------------------")
-    # print(lectures)
+            # print("-------------------------------------------------------------------")
+            # print(strTime)
 
     return render(request, 'EO_001.html', {'lectures' : lecture_list})
 
@@ -364,61 +366,104 @@ def viewGraphUser(request):
     userId = request.GET.get('user')
     lectureId = request.GET.get('lecture')
     
-    print('userId : ',userId)
-    print('lectureId : ',lectureId)
-    # 수강자의 선택 과목에 대한 조건을 추가 
+    user = User.objects.get(user=userId)
+    lecture = Lecture.objects.get(lecture=lectureId)
     
-    data = Event.objects.all()
+    # print('userId : ',userId)
+    # print('lectureId : ',lectureId)
+    result = Result.objects.filter(lecture=lecture, user=user)
+    # 수강자의 선택 과목에 대한 조건을 추가 
+    print(result.query)
+    # data = Event.objects.all()
+    
+    data = Event.objects.filter(lecture=lecture, result__in=result)  
     
     # 유저수와 강의수 
     # -----------------------------------------
-    numOfUsers = User.objects.aggregate(Count('user'))
-    print(numOfUsers)
-    numOfLectures = Lecture.objects.aggregate(Count('lecture'))
-    print(numOfLectures)
+    # numOfUsers = User.objects.aggregate(Count('user'))
+    # print(numOfUsers)
+    # numOfLectures = Lecture.objects.aggregate(Count('lecture'))
+    # print(numOfLectures)
     # ------------------------------------------
+    numOfUsers = 1
+    numOfLectures = 1
     # END
            
     #sleep, awake 갯수 
     #------------------------------------------\
-    numOfSleep = len(Event.objects.filter(stateNo = 1))
-    numOfAwake = len(Event.objects.filter(stateNo = 0))
+    numOfSleep = len(Event.objects.filter(stateNo = 1, lecture=lecture, result__in=result))
+    numOfAwake = len(Event.objects.filter(stateNo = 0, lecture=lecture, result__in=result))
+
     print('numOfAwake : ', numOfAwake)
     print('numOfSleep : ', numOfSleep)
-    
-    
-           
-           
+    print('lectureName', lecture.lecture_name)
     #user에 해당하는 조건
-    arr = [i for i in range(0,len(data))]
+    arr = [i for i in range(0, len(data))]
+    print(arr)
     context = {
         'data' : data,
-        'range':arr,
-        'numOfUsers':numOfUsers['user__count'],
-        'numOfLectures':numOfLectures['lecture__count'],
-        'numOfAwake':numOfAwake,
-        'numOfSleep':numOfSleep
+        'range': arr,
+        'lectureName': lecture.lecture_name,
+        'userName' : user.user_name,
+        'numOfUsers': numOfUsers, #['user__count'],
+        'numOfLectures': numOfLectures, # ['lecture__count'],
+        'numOfAwake': numOfAwake,
+        'numOfSleep': numOfSleep
         }
     # return render(request, 'EO_003.html', context)
-    return render(request, 'test.html', context)
+    return render(request, 'EO_003.html', context)
+    
 
 
 
 
 # 강사의 과목에 해당하는 집중도 그래프 화면 표시    
 def viewGraphTutor(request):
-    userId = request.GET.get('lecture')
+    lectureId = request.GET.get('lecture')
     tutorId = request.GET.get('tutor')
-    # 수정 필요 강사의 그 과목에 해당하는 그래프 그리기 
-    
-    data = Event.objects.all()
-    #user에 해당하는 조건
 
+    print('lectureId : ', lectureId)
+    print('tutorId : ', tutorId)
+
+    tutor = Tutor.objects.get(tutor = tutorId)
+    lecture = Lecture.objects.get(lecture=lectureId, tutor=tutor)
+              
+    # 사용자 수와 강사가 맡은 과목 수 
+    #print("-----------------------------------------")
+    numOfUsers = UserLecture.objects.filter(lecture_id=lectureId).count()
+    #print(numOfUsers)
+    numOfLectures = Lecture.objects.filter(tutor_id=tutorId).count()
+    #print(numOfLectures)
+    #print("------------------------------------------")
+    # END
     
-    arr = [i for i in range(0,len(data))]
+    result = Result.objects.filter(lecture=lecture)
+    # 수강자의 선택 과목에 대한 조건을 추가 
+               
+    #sleep, awake 갯수 
+    #------------------------------------------\
+    numOfSleep = len(Event.objects.filter(stateNo = 1, lecture=lecture, result__in=result))
+    numOfAwake = len(Event.objects.filter(stateNo = 0, lecture=lecture, result__in=result))
+
+    print('numOfAwake : ', numOfAwake)
+    print('numOfSleep : ', numOfSleep)
+           
+    # 수강자의 선택 과목에 대한 조건을 추가 
+    
+    data = Event.objects.filter(lecture=lecture, result__in=result)  
+    print(data)
+    #user에 해당하는 조건
+    arr = [i for i in range(0, len(data))]
+    
     context = {
         'data' : data,
-        'range':arr,
-  
+        'range': arr,
+        'lectureName': lecture.lecture_name,
+        'tutorName': tutor.tutor_name,
+        'numOfUsers': numOfUsers, #['user__count'],
+        'numOfLectures': numOfLectures, # ['lecture__count'],
+        'numOfAwake': numOfAwake,
+        'numOfSleep': numOfSleep
         }
+    # return render(request, 'EO_003.html', context)
     return render(request, 'EO_004.html', context)

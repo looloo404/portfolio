@@ -78,12 +78,10 @@ WSGI_APPLICATION = 'config.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'mydb',  #Database 이름
+        'NAME': 'ocds',  #Database 이름
         'USER' : 'root',
         'PASSWORD' : '1234',
-        'HOST' : 'localhost',
-        # 'PORT' : '3307',
-        
+        'HOST' : 'localhost',     
         'PORT' : '3306',
          } 
 

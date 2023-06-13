@@ -1,92 +1,222 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Chart JS tutorial for beginners</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
-  </head>
-  <body class = 'bg-success'>
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <title>Admin Dashboard</title>
 
-    <div class = 'card-group'>
-        <div class = 'card' style = 'width:40% heights:40%; margin : 10px;'>
-            <div class = 'card-body'>
-            <h5>Summary</h5>
-            <hr>
-            <canvas id="myChart"></canvas>
-            </div>
+    <!-- Montserrat Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@100;200;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+    <!-- Material Icons -->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined" rel="stylesheet">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="../static/css/chart.css">
+  </head>
+  <body>
+    <div class="grid-container">
+      <!-- Main -->
+      <main class="main-container">
+        <div class="main-title">
+          <h2>집중도 결과</h2>
         </div>
 
-        <div class = 'card' style= 'width:40%; height:40%; margin : 10px;'>
-          <div class = 'card-body'>
-          <h5>Summary</h5>
-          <hr>
-          <canvas id="pie_chart"></canvas>
+        <div class="main-cards">
+
+          {% comment %} <div class="card">
+            <div class="card-inner">
+              <h3>비집중 비율</h3>
+              <span class="material-icons-outlined">inventory_2</span>
+            </div>
+            <h1>40%</h1>
+          </div> {% endcomment %}
+
+          <div class="card">
+            <div class="card-inner">
+              <h3>수강중인 강의</h3>
+              <span class="material-icons-outlined">category</span>
+            </div>
+            <h1>{{ lectureName }}</h1>
           </div>
-      </div>
+
+          <div class="card">
+            <div class="card-inner">
+              <h3>수강중 학생</h3>
+              <span class="material-icons-outlined">groups</span>
+            </div>
+            <h1>{{ userName }}</h1>
+          </div>
+
+          {% comment %} <div class="card">
+            <div class="card-inner">
+              <h3>ALERTS</h3>
+              <span class="material-icons-outlined">notification_important</span>
+            </div>
+            <h1>56</h1>
+          </div> {% endcomment %}
+
+        </div>
+
+        <div class="charts">
+
+        <div class="charts-card">
+            <h2 class="chart-title">집중 흐름도</h2>
+            <div id="area-chart"></div>
+        </div>
+
+          <div class="charts-card">
+            <h2 class="chart-title">집중 비율</h2>
+            <div id="pie-chart"></div>
+          </div>
+
+
+
+        </div>
+      </main>
+      <!-- End Main -->
+
     </div>
+
+    <!-- Scripts -->
+    <!-- ApexCharts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/apexcharts/3.35.5/apexcharts.min.js"></script>
     
+    
+    
+    <!-- Custom JS -->
+    <script type="text/javascript">
+      var sleep_Label = [{%for data in data%} '{{ data.sleep|floatformat:"2" }}', {% endfor %}]
+      var awake_Label = [{%for data in data%} '{{ data.awake|floatformat:"2" }}', {% endfor %}]
+      var date_Label = [{%for data in data%}  Date('{{ data.registration_date  }}'), {% endfor %}]
+      var range =[{%for num in range%} '{{ num|floatformat:"0" }}', {% endfor %}]
+      numOfAwake = {{ numOfAwake }}
+      numOfSleep = {{ numOfSleep }}
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz" crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.3.0/dist/chart.umd.min.js"></script>
+    </script>
 
+    <!--script src="../static/js/chart.js"></script-->
     <script>
-    let array = [{%for data in data%} '{{ data.sleep|floatformat:"2" }}', {% endfor %}]
-    console.log(array)
-
-    const ctx = document.getElementById('myChart');
-    
-    var chart = new Chart(ctx, {
-      type: 'line',
-      data: {
-        labels: [{%for num in range%} '{{ num|floatformat:"0" }}', {% endfor %}],
-        datasets: [{
-          label: 'Sleep',
-          data: [{%for data in data%} '{{ data.sleep|floatformat:"2" }}', {% endfor %}],
-          borderColor:['blue'],
-          borderWidth: 1,
+    //area charts
+      var areaCharts = {
+          series: [{
+          name: 'SLEEP',
+          type: 'area',
+          data: sleep_Label
         },
         {
-          label: 'Awake',
-          type : 'line',
-          fill : false,
-          backgroundColor: 'rgb(255, 204, 0)',
-          borderColor: 'rgb(255, 204, 0)',
-          data: [{%for data in data%} '{{ data.awake|floatformat:"2" }}', {% endfor %}]
-      }
+          name: 'AWAKE',
+          type: 'line',
+          data: awake_Label
+        },
 
-        ]
-      },
-      options: {
-        scales: {
+      ],
+        chart: {
+          type: 'line',
+          height : '400px',
+          foreColor: '#FFFFFF'
+          
+        },
+        stroke: {
+          curve: 'smooth'
+        },
+        fill: {
+          type:'solid',
+          opacity: [0.35, 1],
+        },
+        labels: range,
+        markers: {
+          size: 0
+        },
+        yaxis: [
+          {
+            title: {
+              text: 'Y축 : SCORE',
+            },
+          },
+          {
+            opposite: true,
+            title: {
+              text: 'X축 : 수강시간(초)',
+            },
+          },
+          
+
+        ],
+
+        
+        tooltip: {
+          shared: true,
+          intersect: false,
+          theme: "dark",
           y: {
-            beginAtZero: true
+            formatter: function (y) {
+              if(typeof y !== "undefined") {
+                return  y.toFixed(0) + " points";
+              }
+              return y;
+            }
           }
         }
-      }
-    });
+        };
+        
+        var chart_left = new ApexCharts(document.querySelector("#area-chart"), areaCharts);
+        chart_left.render();
+      //-----------------------------------------------------------------------------------------
 
+        // pie chart
+        var pie_chart = {
+          series: [numOfAwake, numOfSleep],
+          // sleep 값과 awake 퍼센트값을 넣어야 한다.
+          labels: ['awake','sleep'],
+          chart: {
+          type: 'donut',
+          height: '500px',
+          foreColor: '#FFFFFF'
+        },
 
+        theme: {
+          monochrome: {
+            enabled: true,
+            color: '#255aee',
+            shadeTo: 'light',
+            shadeIntensity: 0.65
+          }
+        },
+        plotOptions: {
+          pie: {
+            startAngle: -90,
+            endAngle: 90,
+            offsetY: 10
+          }
+        },
+        grid: {
+          padding: {
+            bottom: -80
+          }
+        },
+        responsive: [{
+          breakpoint: 480,
+          options: {
+            chart: {
+              width: 200
+            },
+            legend: {
+              position: 'bottom'
+            }
+          }
+        }]
+        };
 
-    let pie_chart = document.getElementById('pie_chart').getContext('2d');
-
-    var chart2 = new Chart(pie_chart,{
-      type : 'doughnut',
-      data:{
-        labels:['awake','sleep'],
-        datasets:[
-        {
-          label:'percentage',
-          data: [{%for c in counts%} '{{ c }}', {% endfor %}],
-        }],
-      }
-    }
-
-
-    )
-
+        var chart_right = new ApexCharts(document.querySelector("#pie-chart"), pie_chart);
+        chart_right.render();
+      //----------------------------------------------------------------------
 
 </script>
 
-</body>
+
+
+
+
+  </body>
 </html>
