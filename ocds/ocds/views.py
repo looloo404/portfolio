@@ -211,7 +211,7 @@ class VideoCamera(object):
             EAR = (left_ear+right_ear)/2
             EAR = round(EAR,2)
 
-            if EAR<0.29:
+            if EAR<0.275:
                 state = 'close'
                 # print(EAR)
             else:

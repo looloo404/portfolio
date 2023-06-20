@@ -33,6 +33,13 @@ var areaCharts = {
   markers: {
     size: 0
   },
+  xaxis : [
+    {
+      tickAmount : 10
+    }
+
+
+  ],
   yaxis: [
     {
       title: {
@@ -45,8 +52,8 @@ var areaCharts = {
         text: 'X축 : 수강시간(초)',
       },
     },
-    
 
+  
   ],
 
   
