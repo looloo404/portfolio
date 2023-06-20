@@ -1,0 +1,32 @@
+use ocds
+
+
+-- 사용자 테이블 
+INSERT INTO ocds_user (user, Password, User_name, Email, Registration_Date)
+VALUES
+    (123456789, 'password1', 'User1', 'user1@example.com', NOW()),
+    (234567890, 'password2', 'User2', 'user2@example.com', NOW()),
+    (345678901, 'password3', 'User3', 'user3@example.com', NOW());
+    
+
+-- 강사명 테이블 
+INSERT INTO ocds_tutor (Tutor, Password, Tutor_name, Email, Registration_date)
+VALUES
+    (987654321, 'password4', 'Tutor1', 'tutor1@example.com', NOW()),
+    (876543210, 'password5', 'Tutor2', 'tutor2@example.com', NOW()),
+    (765432109, 'password6', 'Tutor3', 'tutor3@example.com', NOW());
+    
+-- 강의 테이블
+INSERT INTO ocds_lecture (Lecture, Lecture_name, tutor_id, Recommended, Lecture_url, Lecture_length, Registration_date)
+VALUES
+    (123456789, 'Lecture1', 987654321, 60.5, 'https://lecture1.com', 3600, NOW()),
+    (234567890, 'Lecture2', 876543210, 45.5, 'https://lecture2.com', 2700, NOW()),
+    (345678901, 'Lecture3', 765432109, 30.5, 'https://lecture3.com', 1800, NOW());
+    
+-- Event 테이블
+INSERT INTO ocds_userlecture (user_id, Lecture_id, finish, Registration_date)
+VALUES
+    (123456789, '123456789', '0', NOW()),
+    (123456789, '234567890', '0', NOW()),
+    (123456789, '345678901', '0', NOW());
+    
